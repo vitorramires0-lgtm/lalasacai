@@ -77,7 +77,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 /* barra da sacola */
 .bag{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none}
 .bag button{pointer-events:auto;max-width:592px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px;border:0;border-radius:18px;background:var(--brand);color:#fff;padding:14px 16px;font-weight:800;box-shadow:0 12px 28px rgba(42,6,56,.35);transform:translateY(140%);transition:transform .25s var(--ease)}
-.bag.on button{transform:none}
+.bag:not(.on){visibility:hidden;transition:visibility 0s .3s}.bag:not(.on) button{transform:translateY(calc(100% + 60px));opacity:0}
+.bag.on button{transform:none;opacity:1}
 .bag .n{background:var(--gold-2);color:var(--brand-deep);min-width:26px;height:26px;border-radius:999px;display:grid;place-items:center;font-size:13px;padding:0 6px}
 .bag .l{flex:1;text-align:left}
 
