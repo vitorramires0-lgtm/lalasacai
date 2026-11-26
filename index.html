@@ -328,14 +328,13 @@ function drawBag(){
    ${st.cart.map((i,k)=>{const p=prodDe(i.tam),ad=i.adds.map(addDe);return`<div class="line"><img src="data:image/jpeg;base64,${p.foto}" alt=""><div class="tx"><b>${esc(p.nome)}</b><span>${esc(i.sel.join(", "))}</span>${ad.length?`<span>+ ${esc(ad.map(a=>a.nome).join(", "))}</span>`:""}${i.obs?`<span>Obs.: ${esc(i.obs)}</span>`:""}<button class="rm" data-ed="${k}" style="color:var(--brand)">Editar</button> · <button class="rm" data-rm="${k}">Remover</button></div><span class="pv m">${fmt(itemPreco(i))}</span></div>`}).join("")}
    <button class="addmore" data-x="ov-bag">+ Adicionar mais açaí</button>
    <div class="form">
-    <div class="fld"><label>Como você quer receber?</label><div class="seg seg2" role="group" aria-label="Recebimento">${["Retirada","Entrega"].map(x=>`<button data-rec="${x}" aria-pressed="${st.rec===x}">${x==="Retirada"?"🏠 Retirada":"🛵 Entrega"}</button>`).join("")}</div></div>
+    <div class="fld"><label>Como você quer receber?</label><div class="seg seg2" role="group" aria-label="Recebimento">${["Retirada","Entrega"].map(x=>`<button data-rec="${x}" aria-pressed="${st.rec===x}">${x}</button>`).join("")}</div></div>
     ${ent?`
     <div class="fld"><label for="f-bairro">Bairro <span class="req">*</span></label><select id="f-bairro"><option value="">Selecione seu bairro</option>${BAIRROS.map((x,k)=>`<option value="${k}" ${String(st.bairro)===String(k)?"selected":""}>${esc(x[0])} · ${fmt(teleDe(x[1]))}</option>`).join("")}<option value="outro" ${st.bairro==="outro"?"selected":""}>Meu bairro não está na lista</option></select>
      <p class="hint">${b?(b.taxa?`Taxa de entrega para ${esc(b.nome)}: <b class="m">${fmt(b.taxa)}</b>`:"A taxa de entrega será combinada pelo WhatsApp."):"A taxa depende da distância até a Lala's, na Cavalhada."}</p></div>
     <div class="fld"><label for="f-end">Rua e número <span class="req">*</span></label><input id="f-end" type="text" autocomplete="street-address" placeholder="Ex.: Av. Cavalhada, 1500"></div>
     <div class="fld"><label for="f-comp">Complemento <small>(opcional)</small></label><input id="f-comp" type="text" placeholder="Ex.: Apto 302, bloco B"></div>
     <div class="fld"><label for="f-ref">Ponto de referência <small>(opcional)</small></label><input id="f-ref" type="text" placeholder="Ex.: em frente à farmácia"></div>`:`
-    <div class="fld"><div class="pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span><b>Retirada no condomínio.</b> A gente avisa pelo WhatsApp quando o seu açaí estiver pronto.</span></div></div>
     <div class="fld"><label for="f-apto">Bloco / apartamento <small>(opcional)</small></label><input id="f-apto" type="text" placeholder="Ex.: Bloco 7 · 504"></div>`}
     <div class="fld two"><div><label for="f-nome">Nome <span class="req">*</span></label><input id="f-nome" type="text" autocomplete="given-name" placeholder="Seu nome"></div><div><label for="f-sobre">Sobrenome <span class="req">*</span></label><input id="f-sobre" type="text" autocomplete="family-name" placeholder="Seu sobrenome"></div></div>
     <div class="fld"><label for="f-tel">WhatsApp <span class="req">*</span></label><input id="f-tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(51) 99999-9999"></div>
@@ -401,7 +400,7 @@ document.addEventListener("click",e=>{
   if(b.id==="add"){saveObs();const c=st.cur,it={tam:c.tam,sel:[...c.sel],adds:[...c.adds],obs:c.obs};
     if(c.edit!=null){st.cart[c.edit]=it;closeOv("ov-prod");drawBag();drawBagBar();openOv("ov-bag");toast("Açaí atualizado");return}
     for(let i=0;i<c.qty;i++)st.cart.push({...it,sel:[...it.sel],adds:[...it.adds]});
-    closeOv("ov-prod");drawBagBar();toast(c.qty>1?`${c.qty} açaís na sacola`:"Açaí na sacola 💜");return}
+    closeOv("ov-prod");drawBagBar();toast(c.qty>1?`${c.qty} açaís na sacola`:"Açaí adicionado à sacola");return}
   if(b.id==="bag-btn"){drawBag();openOv("ov-bag");return}
   if(b.dataset.rm!=null){keepForm();st.cart.splice(+b.dataset.rm,1);drawBagBar();if(!st.cart.length){closeOv("ov-bag");return}drawBag();return}
   if(b.dataset.ed!=null){keepForm();const k=+b.dataset.ed;closeOv("ov-bag");openProd(st.cart[k].tam,k);return}
