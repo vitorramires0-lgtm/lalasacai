@@ -322,6 +322,7 @@ const FIELDS=["f-nome","f-sobre","f-tel","f-end","f-comp","f-ref","f-apto","f-ob
 function keepForm(){const o={};let any=false;FIELDS.forEach(id=>{const e=$(id);if(e){o[id]=e.value;any=true}});if(any)st.form=Object.assign(st.form||{},o)}
 function fmtTel(v){const d=v.replace(/\D/g,"").slice(0,11);if(d.length<3)return d;if(d.length<7)return`(${d.slice(0,2)}) ${d.slice(2)}`;if(d.length<11)return`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`}
 function drawBag(){
+  const _ob=$("bg").querySelector(".sh-body"),_sc=_ob?_ob.scrollTop:0;
   const c=calc(),ent=st.rec==="Entrega",b=bairroSel();
   $("bg").innerHTML=`<div class="bag-h"><h3 id="bg-title">Sua sacola</h3><button class="x" data-x="ov-bag" aria-label="Fechar">×</button></div>
   <div class="sh-body">
@@ -347,6 +348,7 @@ function drawBag(){
   let saved={};try{saved=JSON.parse(localStorage.getItem("lalas-cli")||"null")||{}}catch(_){}
   const map={"f-nome":saved.n,"f-sobre":saved.sn,"f-tel":saved.t,"f-end":saved.e,"f-comp":saved.c,"f-ref":saved.r,"f-apto":saved.a};
   FIELDS.forEach(id=>{const e=$(id);if(!e)return;const v=st.form&&st.form[id]!=null?st.form[id]:map[id];if(v)e.value=v});
+  const _nb=$("bg").querySelector(".sh-body");if(_nb&&_sc)_nb.scrollTop=_sc;
 }
 
 /* ---------- mensagem e envio ---------- */
