@@ -318,7 +318,7 @@ function calc(){
   return{sub,desc,tele,total:sub-desc+tele};
 }
 function drawBagBar(){const n=st.cart.length;$("bag").classList.toggle("on",n>0);$("bag-n").textContent=n;$("bag-t").textContent=fmt(calc().total)}
-const FIELDS=["f-nome","f-sobre","f-tel","f-end","f-comp","f-ref","f-apto","f-obs"];
+const FIELDS=["f-nome","f-sobre","f-end","f-comp","f-ref","f-apto","f-obs"];
 function keepForm(){const o={};let any=false;FIELDS.forEach(id=>{const e=$(id);if(e){o[id]=e.value;any=true}});if(any)st.form=Object.assign(st.form||{},o)}
 function fmtTel(v){const d=v.replace(/\D/g,"").slice(0,11);if(d.length<3)return d;if(d.length<7)return`(${d.slice(0,2)}) ${d.slice(2)}`;if(d.length<11)return`(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`}
 function drawBag(){
@@ -338,7 +338,6 @@ function drawBag(){
     <div class="fld"><label for="f-ref">Ponto de referência <small>(opcional)</small></label><input id="f-ref" type="text" placeholder="Ex.: em frente à farmácia"></div>`:`
     <div class="fld"><label for="f-apto">Bloco / apartamento <small>(opcional)</small></label><input id="f-apto" type="text" placeholder="Ex.: Bloco 7 · 504"></div>`}
     <div class="fld two"><div><label for="f-nome">Nome <span class="req">*</span></label><input id="f-nome" type="text" autocomplete="given-name" placeholder="Seu nome"></div><div><label for="f-sobre">Sobrenome <span class="req">*</span></label><input id="f-sobre" type="text" autocomplete="family-name" placeholder="Seu sobrenome"></div></div>
-    <div class="fld"><label for="f-tel">WhatsApp <span class="req">*</span></label><input id="f-tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(51) 99999-9999"></div>
     <div class="fld"><label>Pagamento</label><div class="seg" role="group" aria-label="Pagamento">${["Pix","Cartão","Dinheiro"].map(x=>`<button data-pg="${x}" aria-pressed="${st.pag===x}">${x}</button>`).join("")}</div><p class="hint">${st.pag==="Pix"?"A gente te manda a chave Pix ao confirmar o pedido.":st.pag==="Cartão"?`Crédito ou débito na maquininha, ${ent?"na entrega":"na retirada"}.`:"Se precisar de troco, avise na observação."}</p></div>
     <div class="fld"><label for="f-obs">Observação do pedido <small>(opcional)</small></label><textarea id="f-obs" rows="2" placeholder="${ent?"Ex.: interfone 302":"Ex.: retiro às 20h"}"></textarea></div>
    </div>
@@ -346,7 +345,7 @@ function drawBag(){
   </div>
   <div class="sh-foot"><button class="go wa" id="send" ${CFG.aberto?"":"disabled"}><span>${CFG.aberto?"Enviar pedido pelo WhatsApp":"Fechado no momento"}</span><span class="m">${fmt(c.total)}</span></button></div>`;
   let saved={};try{saved=JSON.parse(localStorage.getItem("lalas-cli")||"null")||{}}catch(_){}
-  const map={"f-nome":saved.n,"f-sobre":saved.sn,"f-tel":saved.t,"f-end":saved.e,"f-comp":saved.c,"f-ref":saved.r,"f-apto":saved.a};
+  const map={"f-nome":saved.n,"f-sobre":saved.sn,"f-end":saved.e,"f-comp":saved.c,"f-ref":saved.r,"f-apto":saved.a};
   FIELDS.forEach(id=>{const e=$(id);if(!e)return;const v=st.form&&st.form[id]!=null?st.form[id]:map[id];if(v)e.value=v});
   const _nb=$("bg").querySelector(".sh-body");if(_nb&&_sc)_nb.scrollTop=_sc;
 }
@@ -356,7 +355,7 @@ function val(id){const e=$(id);return e?e.value.trim():""}
 function novoNum(){const d=new Date(),ini=(val("f-nome")+val("f-sobre")).normalize("NFD").replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase()||"LA";return String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+"-"+ini}
 function msg(){
   const c=calc(),ent=st.rec==="Entrega",b=bairroSel(),obs=val("f-obs");
-  const L=[`🍇 *Pedido nº ${st.num} · Lala's Açaí*`,"",`*Cliente:* ${val("f-nome")} ${val("f-sobre")}`,`*WhatsApp:* ${fmtTel(val("f-tel"))}`];
+  const L=[`🍇 *Pedido nº ${st.num} · Lala's Açaí*`,"",`*Cliente:* ${val("f-nome")} ${val("f-sobre")}`];
   if(ent){L.push(`*Recebimento:* Entrega · ${b?b.nome:""}`,`*Endereço:* ${val("f-end")}${val("f-comp")?" · "+val("f-comp"):""}`);if(val("f-ref"))L.push(`*Referência:* ${val("f-ref")}`)}
   else{L.push(`*Recebimento:* Retirada${val("f-apto")?" · "+val("f-apto"):""}`)}
   L.push("");
@@ -373,8 +372,7 @@ function enviar(){
   const need=(id,t)=>{if(!val(id)){toast(t);const e=$(id);if(e)e.focus();return true}return false};
   if(st.rec==="Entrega"){if(!st.bairro&&st.bairro!==0){toast("Escolha seu bairro para a entrega");const e=$("f-bairro");if(e)e.focus();return}if(need("f-end","Coloque a rua e o número"))return}
   if(need("f-nome","Coloque seu nome"))return;if(need("f-sobre","Coloque seu sobrenome"))return;
-  if(val("f-tel").replace(/\D/g,"").length<10){toast("Coloque seu WhatsApp com DDD");$("f-tel").focus();return}
-  try{localStorage.setItem("lalas-cli",JSON.stringify({n:val("f-nome"),sn:val("f-sobre"),t:val("f-tel"),e:val("f-end"),c:val("f-comp"),r:val("f-ref"),a:val("f-apto")}))}catch(_){}
+  try{localStorage.setItem("lalas-cli",JSON.stringify({n:val("f-nome"),sn:val("f-sobre"),e:val("f-end"),c:val("f-comp"),r:val("f-ref"),a:val("f-apto")}))}catch(_){}
   st.num=novoNum();const m=msg(),n=CFG.whatsapp,wa=`https://wa.me/${n}?text=${encodeURIComponent(m)}`;copiar(m);
   const mob=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
   const tot=calc().total,pix=st.pag==="Pix"&&CFG.pix&&CFG.pix.chave;
