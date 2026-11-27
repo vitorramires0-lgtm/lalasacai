@@ -245,7 +245,7 @@ const CFG={
     {id:"bombom",nome:"Bombom",preco:3,ic:"🍫",bg:"#E4D6CD"},
     {id:"stik",nome:"Stikadinho",preco:2,ic:"🍭",bg:"#ECDCEA"}
   ],
-  promo:{ativo:false,titulo:"Promoção do dia",texto:"2 açaís de 500 ml por R$ 40",tam:"500",qtd:2,precoCombo:40,gratis:[]}
+  promo:{ativo:true,ate:"2026-11-27",titulo:"Black Friday",texto:"2 açaís de 500 ml por R$ 40",tam:"500",qtd:2,precoCombo:40,gratis:[]}
 };
 /* ================================================= */
 const $=id=>document.getElementById(id);
@@ -280,7 +280,7 @@ function drawStatus(){
 }
 function drawTop(){
   drawStatus();
-  const p=CFG.promo;$("promo").innerHTML=p&&p.ativo?`<div class="promo"><b>${esc(p.titulo)}</b>${esc(p.texto)} · aplicado automaticamente na sacola</div>`:"";
+  const p=promoOn();$("promo").innerHTML=p?`<div class="promo"><b>${esc(p.titulo)}</b>${esc(p.texto)} · aplicado automaticamente na sacola</div>`:"";
   $("prods").innerHTML=CFG.produtos.map(p=>`<button class="prod" data-p="${p.id}"><span class="tx"><h3>${esc(p.nome)}${p.tag?`<span class="tag">${esc(p.tag)}</span>`:""}</h3><span class="ds">${esc(p.desc)}</span><span class="pr m">${fmt(p.preco)}</span></span><span class="phw"><img class="ph" src="data:image/jpeg;base64,${p.foto}" alt="${esc(p.nome)}"><span class="plus" aria-hidden="true">+</span></span></button>`).join("");
 }
 
@@ -315,9 +315,10 @@ function saveObs(){const t=$("f-obs-i");if(t&&st.cur)st.cur.obs=t.value.trim()}
 const BAIRROS=CFG.bairros.slice().sort((a,b)=>a[0].localeCompare(b[0],"pt-BR"));
 const teleDe=km=>{for(const [lim,v] of CFG.teles)if(km<=lim)return v;return CFG.teles.at(-1)[1]};
 function bairroSel(){const b=st.bairro;if(b==null||b==="")return null;if(b==="outro")return{nome:"Outro bairro",km:null,taxa:null};const x=BAIRROS.at(+b);return x?{nome:x[0],km:x[1],taxa:teleDe(x[1])}:null}
+function promoOn(){const p=CFG.promo;if(!p||!p.ativo)return null;if(p.ate){const d=new Date(),k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;if(k>p.ate)return null}return p}
 function calc(){
-  let sub=st.cart.reduce((s,i)=>s+itemPreco(i),0),desc=0;const p=CFG.promo;
-  if(p&&p.ativo){const el=st.cart.filter(i=>i.tam===p.tam),k=Math.floor(el.length/p.qtd);
+  let sub=st.cart.reduce((s,i)=>s+itemPreco(i),0),desc=0;const p=promoOn();
+  if(p){const el=st.cart.filter(i=>i.tam===p.tam),k=Math.floor(el.length/p.qtd);
     if(k){desc+=k*(p.qtd*prodDe(p.tam).preco-p.precoCombo);el.slice(0,k*p.qtd).forEach(i=>i.adds.forEach(id=>{if(p.gratis.includes(id))desc+=addDe(id).preco}))}}
   const b=st.rec==="Entrega"?bairroSel():null,tele=b&&b.taxa?b.taxa:0;
   return{sub,desc,tele,total:sub-desc+tele};
